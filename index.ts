@@ -27,6 +27,7 @@ interface Tile {
   isLock1(): boolean;
   isKey2(): boolean;
   isLock2(): boolean;
+  draw(g: CanvasRenderingContext2D, x: number, y: number): void;
 }
 
 class Air implements Tile {
@@ -65,6 +66,8 @@ class Air implements Tile {
   }
   isLock2(): boolean {
     return false;
+  }
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {
   }
 }
 
@@ -105,6 +108,10 @@ class Flux implements Tile {
   isLock2(): boolean {
     return false;
   }
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {
+    g.fillStyle = "#ccffcc";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 
 class Unbreakable implements Tile {
@@ -143,6 +150,10 @@ class Unbreakable implements Tile {
   }
   isLock2(): boolean {
     return false;
+  }
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {
+    g.fillStyle = "#999999";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
 }
 
@@ -183,6 +194,8 @@ class Player implements Tile {
   isLock2(): boolean {
     return false;
   }
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {
+  }
 }
 
 class Stone implements Tile {
@@ -221,6 +234,10 @@ class Stone implements Tile {
   }
   isLock2(): boolean {
     return false;
+  }
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {
+    g.fillStyle = "#0000cc";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
 }
 
@@ -261,6 +278,10 @@ class FallingStone implements Tile {
   isLock2(): boolean {
     return false;
   }
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {
+    g.fillStyle = "#0000cc";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 
 class Box implements Tile {
@@ -299,6 +320,10 @@ class Box implements Tile {
   }
   isLock2(): boolean {
     return false;
+  }
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {
+    g.fillStyle = "#8b4513";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
 }
 
@@ -339,6 +364,10 @@ class FallingBox implements Tile {
   isLock2(): boolean {
     return false;
   }
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {
+    g.fillStyle = "#8b4513";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 
 class Key1 implements Tile {
@@ -377,6 +406,10 @@ class Key1 implements Tile {
   }
   isLock2(): boolean {
     return false;
+  }
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {
+    g.fillStyle = "#ffcc00";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
 }
 
@@ -417,6 +450,10 @@ class Lock1 implements Tile {
   isLock2(): boolean {
     return false;
   }
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {
+    g.fillStyle = "#ffcc00";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 
 class Key2 implements Tile {
@@ -456,6 +493,10 @@ class Key2 implements Tile {
   isLock2(): boolean {
     return false;
   }
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {
+    g.fillStyle = "#00ccff";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 
 class Lock2 implements Tile {
@@ -494,6 +535,10 @@ class Lock2 implements Tile {
   }
   isLock2(): boolean {
     return true;
+  }
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {
+    g.fillStyle = "#00ccff";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
 }
 
@@ -560,7 +605,7 @@ class Up implements Input {
     return false;
   }
   handle(): void {
-    moveHorizontal(-1);
+    moveVertical(-1);
   }
 }
 
@@ -578,7 +623,7 @@ class Down implements Input {
     return true;
   }
   handle(): void {
-    moveHorizontal(1);
+    moveVertical(1);
   }
 }
 
@@ -793,28 +838,10 @@ function draw() {
 function drawMap(g: CanvasRenderingContext2D) {
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
-      colorOfTile(g, x, y);
-      if (!map[y][x].isAir() && !map[y][x].isPlayer)
-        g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+      map[y][x].draw(g, x, y);
     }
   }
 }
-
-function colorOfTile(g: CanvasRenderingContext2D, x: number, y: number) {
-  if (map[y][x].isFlux())
-    g.fillStyle = "#ccffcc";
-  else if (map[y][x].isUnbreakable())
-    g.fillStyle = "#999999";
-  else if (map[y][x].isStone() || map[y][x].isFallingStone())
-    g.fillStyle = "#0000cc";
-  else if (map[y][x].isBox() || map[y][x].isFallingBox())
-    g.fillStyle = "#8b4513";
-  else if (map[y][x].isKey1() || map[y][x].isLock1())
-    g.fillStyle = "#ffcc00";
-  else if (map[y][x].isKey2() || map[y][x].isLock2())
-    g.fillStyle = "#00ccff";
-}
-
 
 function drawPlayer(g: CanvasRenderingContext2D) {
   g.fillStyle = "#ff0000";
