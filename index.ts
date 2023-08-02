@@ -31,6 +31,8 @@ let map: Tile[][] = [
 
 let inputs: Input[] = [];
 
+
+// tile이 LOCK1, LOCK2인 경우에만 사용
 function remove(tile: Tile) {
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
@@ -81,6 +83,11 @@ function moveVertical(dy: number) {
 }
 
 function update() {
+  handleInput();
+  updateMap();
+}
+
+function handleInput() {
   while (inputs.length > 0) {
     let current = inputs.pop();
     if (current === Input.LEFT)
@@ -92,7 +99,9 @@ function update() {
     else if (current === Input.DOWN)
       moveVertical(1);
   }
+}
 
+function updateMap() {
   for (let y = map.length - 1; y >= 0; y--) {
     for (let x = 0; x < map[y].length; x++) {
       if ((map[y][x] === Tile.STONE || map[y][x] === Tile.FALLING_STONE)
@@ -112,13 +121,25 @@ function update() {
   }
 }
 
-function draw() {
+
+
+function createGraphics() {
   let canvas = document.getElementById("GameCanvas") as HTMLCanvasElement;
   let g = canvas.getContext("2d");
 
   g.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Draw map
+  return g;
+}
+
+
+function draw() {
+  let g = createGraphics();
+  drawMap(g);
+  drawPlayer(g);
+}
+
+function drawMap(g: CanvasRenderingContext2D) {
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
       if (map[y][x] === Tile.FLUX)
@@ -138,11 +159,13 @@ function draw() {
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
   }
+}
 
-  // Draw player
+function drawPlayer(g: CanvasRenderingContext2D) {
   g.fillStyle = "#ff0000";
   g.fillRect(playerx * TILE_SIZE, playery * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 }
+
 
 function gameLoop() {
   let before = Date.now();
