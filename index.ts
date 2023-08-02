@@ -673,44 +673,7 @@ function transformMap() {
   }  
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 let inputs: Input[] = [];
-
-
-/// tile이 LOCK1, LOCK2인 경우에만 사용
-// function remove(tile: Tile) {
-//   for (let y = 0; y < map.length; y++) {
-//     for (let x = 0; x < map[y].length; x++) {
-//       if (map[y][x] === tile) {
-//         map[y][x] = new Air();
-//       }
-//     }
-//   }
-// }
-
 
 function removeLock1() {
   for (let y = 0; y < map.length; y++) {
@@ -731,9 +694,6 @@ function removeLock2() {
     }
   }
 }
-
-
-
 
 function moveToTile(newx: number, newy: number) {
   map[playery][playerx] = new Air();
@@ -766,7 +726,6 @@ function moveVertical(dy: number) {
     || map[playery + dy][playerx].isAir()) {
     moveToTile(playerx, playery + dy);
   } else if (map[playery + dy][playerx].isKey1()) {
-    // remove(Tile.LOCK1);
     removeLock1();
     moveToTile(playerx, playery + dy);
   } else if (map[playery + dy][playerx].isKey2()) {
@@ -798,21 +757,15 @@ function updateMap() {
 function updateTile(x: number, y: number) {
   if ((map[y][x].isStone() || map[y][x].isFallingStone())
     && map[y + 1][x].isAir()) {
-    // map[y + 1][x] = Tile.FALLING_STONE;
-    // map[y][x] = Tile.AIR;
     map[y + 1][x] = new FallingStone();
     map[y][x] = new Air();
   } else if ((map[y][x].isBox() || map[y][x].isFallingBox())
     && map[y + 1][x].isAir()) {
-    // map[y + 1][x] = Tile.FALLING_BOX;
-    // map[y][x] = Tile.AIR;
     map[y + 1][x] = new FallingBox();
     map[y][x] = new Air();
   } else if (map[y][x].isFallingStone()) {
-    // map[y][x] = Tile.STONE;
     map[y][x] = new Stone();
   } else if (map[y][x].isFallingBox()) {
-    // map[y][x] = Tile.BOX;
     map[y][x] = new Box();
   }
 }
