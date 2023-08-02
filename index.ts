@@ -14,8 +14,87 @@ enum Tile {
   KEY2, LOCK2
 }
 
-enum Input {
+enum RawInput {
   UP, DOWN, LEFT, RIGHT
+}
+interface Input {
+  isRight(): boolean;
+  isLeft(): boolean;
+  isUp(): boolean;
+  isDown(): boolean;
+  handle(): void;
+}
+
+class Right implements Input {
+  isRight(): boolean {
+    return true;
+  }
+  isLeft(): boolean {
+    return false;
+  }
+  isUp(): boolean {
+    return false;
+  }
+  isDown(): boolean {
+    return false;
+  }
+  handle(): void {
+    moveHorizontal(1);
+  }
+}
+
+class Left implements Input {
+  isRight(): boolean {
+    return false;
+  }
+  isLeft(): boolean {
+    return true;
+  }
+  isUp(): boolean {
+    return false;
+  }
+  isDown(): boolean {
+    return false;
+  }
+  handle(): void {
+    moveHorizontal(-1);
+  }
+}
+
+class Up implements Input {
+  isRight(): boolean {
+    return false;
+  }
+  isLeft(): boolean {
+    return false;
+  }
+  isUp(): boolean {
+    return true;
+  }
+  isDown(): boolean {
+    return false;
+  }
+  handle(): void {
+    moveHorizontal(-1);
+  }
+}
+
+class Down implements Input {
+  isRight(): boolean {
+    return false;
+  }
+  isLeft(): boolean {
+    return false;
+  }
+  isUp(): boolean {
+    return false;
+  }
+  isDown(): boolean {
+    return true;
+  }
+  handle(): void {
+    moveHorizontal(1);
+  }
 }
 
 let playerx = 1;
@@ -32,7 +111,7 @@ let map: Tile[][] = [
 let inputs: Input[] = [];
 
 
-// tile이 LOCK1, LOCK2인 경우에만 사용
+/// tile이 LOCK1, LOCK2인 경우에만 사용
 function remove(tile: Tile) {
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
@@ -89,20 +168,9 @@ function update() {
 
 function handleInputs() {
   while (inputs.length > 0) {
-    let current = inputs.pop();
-    handleInput(current);
+    let input = inputs.pop();
+    input.handle();
   }
-}
-
-function handleInput(input: Input) {
-  if (input === Input.LEFT)
-    moveHorizontal(-1);
-  else if (input === Input.RIGHT)
-    moveHorizontal(1);
-  else if (input === Input.UP)
-    moveVertical(-1);
-  else if (input === Input.DOWN)
-    moveVertical(1);
 }
 
 function updateMap() {
@@ -194,9 +262,9 @@ const UP_KEY = "ArrowUp";
 const RIGHT_KEY = "ArrowRight";
 const DOWN_KEY = "ArrowDown";
 window.addEventListener("keydown", e => {
-  if (e.key === LEFT_KEY || e.key === "a") inputs.push(Input.LEFT);
-  else if (e.key === UP_KEY || e.key === "w") inputs.push(Input.UP);
-  else if (e.key === RIGHT_KEY || e.key === "d") inputs.push(Input.RIGHT);
-  else if (e.key === DOWN_KEY || e.key === "s") inputs.push(Input.DOWN);
+  if (e.key === LEFT_KEY || e.key === "a") inputs.push(new Left());
+  else if (e.key === UP_KEY || e.key === "w") inputs.push(new Up());
+  else if (e.key === RIGHT_KEY || e.key === "d") inputs.push(new Right());
+  else if (e.key === DOWN_KEY || e.key === "s") inputs.push(new Down());
 });
 
