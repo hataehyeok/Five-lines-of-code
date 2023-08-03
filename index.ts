@@ -328,6 +328,7 @@ class Lock2 implements Tile {
   moveVertical(dy: number) { }
 }
 
+
 enum RawInput {
   UP, DOWN, LEFT, RIGHT
 }
@@ -344,7 +345,7 @@ class Right implements Input {
   isLeft(): boolean { return false; }
   isUp(): boolean { return false; }
   isDown(): boolean { return false; }
-  handle(): void { moveHorizontal(1); }
+  handle(): void { map[playery][playerx + 1].moveHorizontal(1); }
 }
 
 class Left implements Input {
@@ -352,7 +353,7 @@ class Left implements Input {
   isLeft(): boolean { return true; }
   isUp(): boolean { return false; }
   isDown(): boolean { return false; }
-  handle(): void { moveHorizontal(-1); }
+  handle(): void { map[playery][playerx - 1].moveHorizontal(-1); }
 }
 
 class Up implements Input {
@@ -360,7 +361,7 @@ class Up implements Input {
   isLeft(): boolean { return false; }
   isUp(): boolean { return true; }
   isDown(): boolean { return false; }
-  handle(): void { moveVertical(-1); }
+  handle(): void { map[playery - 1][playerx].moveVertical(-1); }
 }
 
 class Down implements Input {
@@ -368,7 +369,7 @@ class Down implements Input {
   isLeft(): boolean { return false; }
   isUp(): boolean { return false; }
   isDown(): boolean { return true; }
-  handle(): void { moveVertical(1); }
+  handle(): void { map[playery + 1][playerx].moveVertical(1); }
 }
 
 let playerx = 1;
@@ -446,14 +447,6 @@ function moveToTile(newx: number, newy: number) {
   playery = newy;
 }
 
-function moveHorizontal(dx: number) {
-  map[playery][playerx + dx].moveHorizontal(dx);
-}
-
-function moveVertical(dy: number) {
-  map[playery + dy][playerx].moveVertical(dy);
-}
-
 function update() {
   handleInputs();
   updateMap();
@@ -490,8 +483,6 @@ function updateTile(x: number, y: number) {
   }
 }
 
-
-
 function createGraphics() {
   let canvas = document.getElementById("GameCanvas") as HTMLCanvasElement;
   let g = canvas.getContext("2d");
@@ -500,7 +491,6 @@ function createGraphics() {
 
   return g;
 }
-
 
 function draw() {
   let g = createGraphics();
