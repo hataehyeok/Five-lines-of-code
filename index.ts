@@ -67,9 +67,7 @@ interface Tile {
   isFlux(): boolean;
   isUnbreakable(): boolean;
   isPlayer(): boolean;
-  isKey1(): boolean;
   isLock1(): boolean;
-  isKey2(): boolean;
   isLock2(): boolean;
   draw(g: CanvasRenderingContext2D, x: number, y: number): void;
   moveHorizontal(dx: number): void;
@@ -82,9 +80,7 @@ class Air implements Tile {
   isFlux(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isPlayer(): boolean { return true; }
-  isKey1(): boolean { return false; }
   isLock1(): boolean { return false; }
-  isKey2(): boolean { return false; }
   isLock2(): boolean { return false; }
   draw(g: CanvasRenderingContext2D, x: number, y: number) { }
   moveHorizontal(dx: number) { moveToTile(playerx + dx, playery); }
@@ -97,9 +93,7 @@ class Flux implements Tile {
   isFlux(): boolean { return true; }
   isUnbreakable(): boolean { return false; }
   isPlayer(): boolean { return true; }
-  isKey1(): boolean { return false; }
   isLock1(): boolean { return false; }
-  isKey2(): boolean { return false; }
   isLock2(): boolean { return false; }
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = "#ccffcc"; 
@@ -115,9 +109,7 @@ class Unbreakable implements Tile {
   isFlux(): boolean { return false; }
   isUnbreakable(): boolean { return true; }
   isPlayer(): boolean { return false; }
-  isKey1(): boolean { return false; }
   isLock1(): boolean { return false; }
-  isKey2(): boolean { return false; }
   isLock2(): boolean { return false; }
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = "#999999";
@@ -133,9 +125,7 @@ class Player implements Tile {
   isFlux(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isPlayer(): boolean { return true; }
-  isKey1(): boolean { return false; }
   isLock1(): boolean { return false; }
-  isKey2(): boolean { return false; }
   isLock2(): boolean { return false; }
   draw(g: CanvasRenderingContext2D, x: number, y: number) { }
   moveHorizontal(dx: number) { }
@@ -153,9 +143,7 @@ class Stone implements Tile {
   isFlux(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isPlayer(): boolean { return false; }
-  isKey1(): boolean { return false; }
   isLock1(): boolean { return false; }
-  isKey2(): boolean { return false; }
   isLock2(): boolean { return false; }
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = "#0000cc";
@@ -176,9 +164,7 @@ class Box implements Tile {
   isFlux(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isPlayer(): boolean { return false; }
-  isKey1(): boolean { return false; }
   isLock1(): boolean { return false; }
-  isKey2(): boolean { return false; }
   isLock2(): boolean { return false; }
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = "#8b4513";
@@ -191,44 +177,43 @@ class Box implements Tile {
 
 
 
+interface RemoveStrategy {
+  check(tile: Tile): boolean;
+}
 
+class RemoveLock1 implements RemoveStrategy {
+  check(tile: Tile) {
+    return tile.isLock1();
+  }
+}
 
+class RemoveLock2 implements RemoveStrategy {
+  check(tile: Tile) {
+    return tile.isLock2();
+  }
+}
 
+class Key implements Tile {
+  constructor(
+    private color: string,
+    private removeStrategy: RemoveStrategy) { }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class Key1 implements Tile {
   isAir(): boolean { return false; }
   isFlux(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isPlayer(): boolean { return false; }
-  isKey1(): boolean { return true; }
   isLock1(): boolean { return false; }
-  isKey2(): boolean { return false; }
   isLock2(): boolean { return false; }
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = "#ffcc00";
+    g.fillStyle = this.color;
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   moveHorizontal(dx: number) {
-    removeLock1();
+    remove(this.removeStrategy);
     moveToTile(playerx + dx, playery);
   }
   moveVertical(dy: number) {
-    removeLock1();
+    remove(this.removeStrategy);
     moveToTile(playerx, playery + dy);
   }
   update(x: number, y: number) { }
@@ -239,9 +224,7 @@ class Lock1 implements Tile {
   isFlux(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isPlayer(): boolean { return false; }
-  isKey1(): boolean { return false; }
   isLock1(): boolean { return true; }
-  isKey2(): boolean { return false; }
   isLock2(): boolean { return false; }
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = "#ffcc00";
@@ -252,38 +235,12 @@ class Lock1 implements Tile {
   update(x: number, y: number) { }
 }
 
-class Key2 implements Tile {
-  isAir(): boolean { return false; }
-  isFlux(): boolean { return false; }
-  isUnbreakable(): boolean { return false; }
-  isPlayer(): boolean { return false; }
-  isKey1(): boolean { return false; }
-  isLock1(): boolean { return false; }
-  isKey2(): boolean { return true; }
-  isLock2(): boolean { return false; }
-  draw(g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = "#00ccff";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-  }
-  moveHorizontal(dx: number) {
-    removeLock2();
-    moveToTile(playerx + dx, playery);
-  }
-  moveVertical(dy: number) {
-    removeLock2();
-    moveToTile(playerx, playery + dy);
-  }
-  update(x: number, y: number) { }
-}
-
 class Lock2 implements Tile {
   isAir(): boolean { return false; }
   isFlux(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isPlayer(): boolean { return false; }
-  isKey1(): boolean { return false; }
   isLock1(): boolean { return false; }
-  isKey2(): boolean { return false; }
   isLock2(): boolean { return true; }
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = "#00ccff";
@@ -366,9 +323,9 @@ function transformTile(tile: RawTile) {
     case RawTile.FALLING_STONE: return new Stone(new Falling());
     case RawTile.BOX: return new Box(new Resting());
     case RawTile.FALLING_BOX: return new Box(new Falling());
-    case RawTile.KEY1: return new Key1();
+    case RawTile.KEY1: return new Key("#ffcc00", new RemoveLock1());
     case RawTile.LOCK1: return new Lock1();
-    case RawTile.KEY2: return new Key2();
+    case RawTile.KEY2: return new Key("#00ccff", new RemoveLock2());
     case RawTile.LOCK2: return new Lock2();
     default: return assertExhausted(tile);
   }
@@ -387,35 +344,18 @@ function transformMap() {
 let inputs: Input[] = [];
 
 
-function remove() {
+function remove(shouldRemove: RemoveStrategy) {
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
-      if (map[y][x].isLock1()) {
+      if (shouldRemove.check(map[y][x])) {
         map[y][x] = new Air();
       }
     }
   }
 }
 
-function removeLock1() {
-  for (let y = 0; y < map.length; y++) {
-    for (let x = 0; x < map[y].length; x++) {
-      if (map[y][x].isLock1()) {
-        map[y][x] = new Air();
-      }
-    }
-  }
-}
 
-function removeLock2() {
-  for (let y = 0; y < map.length; y++) {
-    for (let x = 0; x < map[y].length; x++) {
-      if (map[y][x].isLock2()) {
-        map[y][x] = new Air();
-      }
-    }
-  }
-}
+
 
 function moveToTile(newx: number, newy: number) {
   map[playery][playerx] = new Air();
