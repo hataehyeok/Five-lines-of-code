@@ -62,8 +62,6 @@ class FallStrategy {
   }
 }
 
-
-
 interface RemoveStrategy {
   check(tile: Tile): boolean;
 }
@@ -80,6 +78,23 @@ class RemoveLock2 implements RemoveStrategy {
   }
 }
 
+class KeyConfiguration {
+  constructor(
+    private color: string,
+    private _1: boolean,
+    private removeStrategy: RemoveStrategy
+  ) { }
+  setColor(g: CanvasRenderingContext2D) {
+    g.fillStyle = this.color;
+  }
+  is1() { return this._1;}
+  removeLock() {
+    remove(this.removeStrategy);
+  }
+  fillRect(g: CanvasRenderingContext2D, x: number, y: number) {
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
+}
 
 
 interface Tile {
@@ -158,7 +173,6 @@ class Stone implements Tile {
   constructor(falling: FallingState) {
     this.fallStrategy = new FallStrategy(falling);
   }
-
   isAir(): boolean { return false; }
   isFlux(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
@@ -179,7 +193,6 @@ class Box implements Tile {
   constructor(falling: FallingState) {
     this.fallStrategy = new FallStrategy(falling);
   }
-
   isAir(): boolean { return false; }
   isFlux(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
@@ -204,15 +217,15 @@ class Key implements Tile {
   isLock1(): boolean { return false; }
   isLock2(): boolean { return false; }
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = this.keyConf.getColor();
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    this.keyConf.setColor(g);
+    this.keyConf.fillRect(g, x, y);
   }
   moveHorizontal(dx: number) {
-    remove(this.keyConf.getRemoveStrategy());
+    this.keyConf.removeLock();
     moveToTile(playerx + dx, playery);
   }
   moveVertical(dy: number) {
-    remove(this.keyConf.getRemoveStrategy());
+    this.keyConf.removeLock();
     moveToTile(playerx, playery + dy);
   }
   update(x: number, y: number) { }
@@ -227,23 +240,12 @@ class LockTile implements Tile {
   isLock1(): boolean { return this.keyConf.is1(); }
   isLock2(): boolean { return !this.keyConf.is1(); }
   draw(g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = this.keyConf.getColor();
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    this.keyConf.setColor(g);
+    this.keyConf.fillRect(g, x, y);
   }
   moveHorizontal(dx: number) { }
   moveVertical(dy: number) { }
   update(x: number, y: number) { }
-}
-
-class KeyConfiguration {
-  constructor(
-    private color: string,
-    private _1: boolean,
-    private removeStrategy: RemoveStrategy
-  ) { }
-  getColor() { return this.color; }
-  is1() { return this._1;}
-  getRemoveStrategy() { return this.removeStrategy; }
 }
 
 const YELLOW_KEY = new KeyConfiguration("#ffcc00", true, new RemoveLock1());
