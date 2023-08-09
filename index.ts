@@ -247,7 +247,7 @@ class KeyConfiguration {
 }
 
 const YELLOW_KEY = new KeyConfiguration("#ffcc00", true, new RemoveLock1());
-const BLUE_KEY = new KeyConfiguration("#ffcc00", false, new RemoveLock2());
+const BLUE_KEY = new KeyConfiguration("#00ccff", false, new RemoveLock2());
 
 
 
@@ -304,7 +304,31 @@ let rawMap: RawTile[][] = [
   [2, 4, 1, 1, 1, 9, 0, 2],
   [2, 2, 2, 2, 2, 2, 2, 2],
 ];
+
+// let rawMap: RawTile[][] = [
+//   [2, 2, 2, 2, 2, 2, 2, 2],
+//   [2, RawTile.PLAYER, 0, 1, 1, 2, 0, 2],
+//   [2, 4, 2, 6, 1, 2, 0, 2],
+//   [2, 8, 4, 1, 1, 2, 0, 2],
+//   [2, 4, 1, 1, 1, 9, 0, 2],
+//   [2, 2, 2, 2, 2, 11, 2, 2],
+// ];
+// 2 = wall, unbreakable
+
+
 // 7, 5가 없음
+
+// enum RawTile {
+//   AIR,
+//   FLUX,
+//   UNBREAKABLE,
+//   PLAYER,
+//   STONE, FALLING_STONE,
+//   BOX, FALLING_BOX,
+//   KEY1, LOCK1,
+//   KEY2, LOCK2
+// }
+
 
 let map: Tile[][];
 
