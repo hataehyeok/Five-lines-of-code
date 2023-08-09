@@ -62,6 +62,26 @@ class FallStrategy {
   }
 }
 
+
+
+interface RemoveStrategy {
+  check(tile: Tile): boolean;
+}
+
+class RemoveLock1 implements RemoveStrategy {
+  check(tile: Tile) {
+    return tile.isLock1();
+  }
+}
+
+class RemoveLock2 implements RemoveStrategy {
+  check(tile: Tile) {
+    return tile.isLock2();
+  }
+}
+
+
+
 interface Tile {
   isAir(): boolean;
   isFlux(): boolean;
@@ -175,24 +195,6 @@ class Box implements Tile {
   update(x: number, y: number) { this.fallStrategy.update(this, x, y); }
 }
 
-
-
-interface RemoveStrategy {
-  check(tile: Tile): boolean;
-}
-
-class RemoveLock1 implements RemoveStrategy {
-  check(tile: Tile) {
-    return tile.isLock1();
-  }
-}
-
-class RemoveLock2 implements RemoveStrategy {
-  check(tile: Tile) {
-    return tile.isLock2();
-  }
-}
-
 class Key implements Tile {
   constructor(
     private color: string,
@@ -219,7 +221,7 @@ class Key implements Tile {
   update(x: number, y: number) { }
 }
 
-class Lock1 implements Tile {
+class LockTile implements Tile {
   constructor(
     private color: string,
     private lock1: boolean)
@@ -238,6 +240,8 @@ class Lock1 implements Tile {
   moveVertical(dy: number) { }
   update(x: number, y: number) { }
 }
+
+
 
 enum RawInput {
   UP, DOWN, LEFT, RIGHT
@@ -311,9 +315,9 @@ function transformTile(tile: RawTile) {
     case RawTile.BOX: return new Box(new Resting());
     case RawTile.FALLING_BOX: return new Box(new Falling());
     case RawTile.KEY1: return new Key("#ffcc00", new RemoveLock1());
-    case RawTile.LOCK1: return new Lock1("#ffcc00", true);
+    case RawTile.LOCK1: return new LockTile("#ffcc00", true);
     case RawTile.KEY2: return new Key("#00ccff", new RemoveLock2());
-    case RawTile.LOCK2: return new Lock1("#00ccff", false);
+    case RawTile.LOCK2: return new LockTile("#00ccff", false);
     default: return assertExhausted(tile);
   }
 }
@@ -330,7 +334,6 @@ function transformMap() {
 
 let inputs: Input[] = [];
 
-
 function remove(shouldRemove: RemoveStrategy) {
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
@@ -340,9 +343,6 @@ function remove(shouldRemove: RemoveStrategy) {
     }
   }
 }
-
-
-
 
 function moveToTile(newx: number, newy: number) {
   map[playery][playerx] = new Air();
