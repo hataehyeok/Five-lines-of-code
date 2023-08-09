@@ -17,11 +17,16 @@ enum RawTile {
 interface FallingState {
   isFalling(): boolean;
   moveHorizontal(tile: Tile, dx: number): void;
+  drop(tile: Tile, x: number, y: number): void;
 }
 
 class Falling implements FallingState {
   isFalling(): boolean { return true; }
   moveHorizontal(tile: Tile, dx: number) { }
+  drop(tile: Tile, x: number, y: number): void {
+    map[y + 1][x] = tile;
+    map[y][x] = new Air();
+  }
 }
 
 class Resting implements FallingState {
@@ -32,22 +37,14 @@ class Resting implements FallingState {
       moveToTile(playerx + dx, playery);
     }
   }
+  drop(tile: Tile, x: number, y: number): void { }
 }
 
 class FallStrategy {
   constructor(private falling: FallingState) { }
   update(tile: Tile, x: number, y: number) {
-    this.falling = map[y + 1][x].isAir()
-      ? new Falling()
-      : new Resting();
-    this.drop(tile, x, y);
-  }
-
-  private drop(tile: Tile, x: number, y: number) {
-    if (map[y + 1][x].isAir()) {
-      map[y + 1][x] = tile;
-      map[y][x] = new Air();
-    }
+    this.falling = map[y + 1][x].getBlockOnTopState();
+    this.falling.drop(tile, x, y);
   }
   moveHorizontal(tile: Tile, dx: number) {
     this.falling.moveHorizontal(tile, dx);
@@ -100,6 +97,7 @@ interface Tile {
   moveHorizontal(dx: number): void;
   moveVertical(dy: number): void;
   update(x: number, y: number): void;
+  getBlockOnTopState(): FallingState;
 }
 
 class Air implements Tile {
@@ -113,6 +111,7 @@ class Air implements Tile {
   moveHorizontal(dx: number) { moveToTile(playerx + dx, playery); }
   moveVertical(dy: number) { moveToTile(playerx, playery + dy); }
   update(x: number, y: number) { }
+  getBlockOnTopState(): FallingState { return new Falling(); }
 }
 
 class Flux implements Tile {
@@ -129,6 +128,7 @@ class Flux implements Tile {
   moveHorizontal(dx: number) { moveToTile(playerx + dx, playery); }
   moveVertical(dy: number) { moveToTile(playerx, playery + dy); }
   update(x: number, y: number) { }
+  getBlockOnTopState(): FallingState { return new Resting(); }
 }
 
 class Unbreakable implements Tile {
@@ -145,6 +145,7 @@ class Unbreakable implements Tile {
   moveHorizontal(dx: number) { }
   moveVertical(dy: number) { }
   update(x: number, y: number) { }
+  getBlockOnTopState(): FallingState { return new Resting(); }
 }
 
 class Player implements Tile {
@@ -158,6 +159,7 @@ class Player implements Tile {
   moveHorizontal(dx: number) { }
   moveVertical(dy: number) { }
   update(x: number, y: number) { }
+  getBlockOnTopState(): FallingState { return new Resting(); }
 }
 
 class Stone implements Tile {
@@ -178,6 +180,7 @@ class Stone implements Tile {
   moveHorizontal(dx: number) { this.fallStrategy.moveHorizontal(this, dx); }
   moveVertical(dy: number) { }
   update(x: number, y: number) { this.fallStrategy.update(this, x, y); }
+  getBlockOnTopState(): FallingState { return new Resting(); }
 }
 
 class Box implements Tile {
@@ -198,6 +201,7 @@ class Box implements Tile {
   moveHorizontal(dx: number) { this.fallStrategy.moveHorizontal(this, dx); }
   moveVertical(dy: number) { }
   update(x: number, y: number) { this.fallStrategy.update(this, x, y); }
+  getBlockOnTopState(): FallingState { return new Resting(); }
 }
 
 class Key implements Tile {
@@ -221,6 +225,7 @@ class Key implements Tile {
     moveToTile(playerx, playery + dy);
   }
   update(x: number, y: number) { }
+  getBlockOnTopState(): FallingState { return new Resting(); }
 }
 
 class LockTile implements Tile {
@@ -238,6 +243,7 @@ class LockTile implements Tile {
   moveHorizontal(dx: number) { }
   moveVertical(dy: number) { }
   update(x: number, y: number) { }
+  getBlockOnTopState(): FallingState { return new Resting(); }
 }
 
 const YELLOW_KEY = new KeyConfiguration("#ffcc00", true, new RemoveLock1());
