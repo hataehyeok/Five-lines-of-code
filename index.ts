@@ -281,13 +281,9 @@ class Down implements Input {
 class Player {
   private x = 1;
   private y = 1;
-  private getX() { return this.x; }
-  private getY() { return this.y; }
-  setX(x: number) { this.x = x; }
-  setY(y: number) { this.y = y; }
   drawPlayer(g: CanvasRenderingContext2D) {
     g.fillStyle = "#ff0000";
-    g.fillRect(this.getX() * TILE_SIZE, this.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    g.fillRect(this.x * TILE_SIZE, this.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   pushHorizontal(tile: Tile, dx: number) {
     if (map[this.y][this.x + dx + dx].isAir() && !map[this.y + 1][this.x + dx].isAir()) {
