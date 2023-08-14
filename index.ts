@@ -31,9 +31,7 @@ class Falling implements FallingState {
 
 class Resting implements FallingState {
   isFalling(): boolean { return false; }
-  moveHorizontal(player: Player, tile: Tile, dx: number) {
-    player.pushHorizontal(tile, dx);
-  }
+  moveHorizontal(player: Player, tile: Tile, dx: number) { player.pushHorizontal(tile, dx); }
   drop(tile: Tile, x: number, y: number): void { }
 }
 
@@ -43,9 +41,7 @@ class FallStrategy {
     this.falling = map[y + 1][x].getBlockOnTopState();
     this.falling.drop(tile, x, y);
   }
-  moveHorizontal(tile: Tile, dx: number) {
-    this.falling.moveHorizontal(player, tile, dx);
-  }
+  moveHorizontal(tile: Tile, dx: number) { this.falling.moveHorizontal(player, tile, dx); }
 }
 
 interface RemoveStrategy {
@@ -53,15 +49,11 @@ interface RemoveStrategy {
 }
 
 class RemoveLock1 implements RemoveStrategy {
-  check(tile: Tile) {
-    return tile.isLock1();
-  }
+  check(tile: Tile) { return tile.isLock1(); }
 }
 
 class RemoveLock2 implements RemoveStrategy {
-  check(tile: Tile) {
-    return tile.isLock2();
-  }
+  check(tile: Tile) { return tile.isLock2(); }
 }
 
 class KeyConfiguration {
@@ -70,13 +62,9 @@ class KeyConfiguration {
     private _1: boolean,
     private removeStrategy: RemoveStrategy
   ) { }
-  setColor(g: CanvasRenderingContext2D) {
-    g.fillStyle = this.color;
-  }
+  setColor(g: CanvasRenderingContext2D) { g.fillStyle = this.color; }
   is1() { return this._1; }
-  removeLock() {
-    remove(this.removeStrategy);
-  }
+  removeLock() { remove(this.removeStrategy); }
   fillRect(g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
@@ -105,14 +93,8 @@ class Air implements Tile {
   isLock1(): boolean { return false; }
   isLock2(): boolean { return false; }
   draw(g: CanvasRenderingContext2D, x: number, y: number) { }
-  moveHorizontal(player: Player, dx: number) {
-    player.move(dx, 0);
-    //moveToTile(player.getX() + dx, player.getY());
-  }
-  moveVertical(player: Player, dy: number) {
-    player.move(0, dy);
-    //moveToTile(player.getX(), player.getY() + dy);
-  }
+  moveHorizontal(player: Player, dx: number) { player.move(dx, 0); }
+  moveVertical(player: Player, dy: number) { player.move(0, dy); }
   update(x: number, y: number) { }
   getBlockOnTopState(): FallingState { return new Falling(); }
 }
@@ -128,14 +110,8 @@ class Flux implements Tile {
     g.fillStyle = "#ccffcc";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
-  moveHorizontal(player: Player, dx: number) {
-    player.move(dx, 0);
-    //moveToTile(player.getX() + dx, player.getY());
-  }
-  moveVertical(player: Player, dy: number) {
-    player.move(0, dy);
-    //moveToTile(player.getX(), player.getY() + dy);
-  }
+  moveHorizontal(player: Player, dx: number) { player.move(dx, 0); }
+  moveVertical(player: Player, dy: number) { player.move(0, dy); }
   update(x: number, y: number) { }
   getBlockOnTopState(): FallingState { return new Resting(); }
 }
@@ -228,12 +204,10 @@ class Key implements Tile {
   moveHorizontal(player: Player, dx: number) {
     this.keyConf.removeLock();
     player.move(dx, 0);
-    //moveToTile(player.getX() + dx, player.getY());
   }
   moveVertical(player: Player, dy: number) {
     this.keyConf.removeLock();
     player.move(0, dy);
-    //moveToTile(player.getX(), player.getY() + dy);
   }
   update(x: number, y: number) { }
   getBlockOnTopState(): FallingState { return new Resting(); }
@@ -261,7 +235,6 @@ const YELLOW_KEY = new KeyConfiguration("#ffcc00", true, new RemoveLock1());
 const BLUE_KEY = new KeyConfiguration("#00ccff", false, new RemoveLock2());
 
 
-
 enum RawInput {
   UP, DOWN, LEFT, RIGHT
 }
@@ -278,9 +251,7 @@ class Right implements Input {
   isLeft(): boolean { return false; }
   isUp(): boolean { return false; }
   isDown(): boolean { return false; }
-  handle(player: Player): void {
-    player.moveHorizontal(1);
-  }
+  handle(player: Player): void { player.moveHorizontal(1); }
 }
 
 class Left implements Input {
@@ -352,30 +323,7 @@ let rawMap: RawTile[][] = [
   [2, 2, 2, 2, 2, 2, 2, 2],
 ];
 
-// let rawMap: RawTile[][] = [
-//   [2, 2, 2, 2, 2, 2, 2, 2],
-//   [2, RawTile.PLAYER, 0, 1, 1, 2, 0, 2],
-//   [2, 4, 2, 6, 1, 2, 0, 2],
-//   [2, 8, 4, 1, 1, 2, 0, 2],
-//   [2, 4, 1, 1, 1, 9, 0, 2],
-//   [2, 2, 2, 2, 2, 11, 2, 2],
-// ];
-// 2 = wall, unbreakable
-
-
-// 7, 5가 없음
-
-// enum RawTile {
-//   AIR,
-//   FLUX,
-//   UNBREAKABLE,
-//   PLAYER,
-//   STONE, FALLING_STONE,
-//   BOX, FALLING_BOX,
-//   KEY1, LOCK1,
-//   KEY2, LOCK2
-// }
-
+// 7, 5 => blue key, lock
 
 let map: Tile[][];
 
@@ -422,15 +370,6 @@ function remove(shouldRemove: RemoveStrategy) {
     }
   }
 }
-
-// function moveToTile(newx: number, newy: number) {
-//   player.moveToTile(newx, newy);
-
-//   // map[player.getY()][player.getX()] = new Air();
-//   // map[newy][newx] = new PlayerTile();
-//   // player.setX(newx);
-//   // player.setY(newy);
-// }
 
 function update() {
   handleInputs();
