@@ -14,6 +14,15 @@ enum RawTile {
   KEY2, LOCK2
 }
 
+
+
+
+
+
+
+
+
+
 interface FallingState {
   isFalling(): boolean;
   moveHorizontal(map: Map, player: Player, tile: Tile, dx: number): void;
@@ -308,8 +317,7 @@ let player = new Player();
 
 class Map {
   private map: Tile[][];
-  setMap(map: Tile[][]) { this.map = map; }
-  transform() {
+  constructor() {
     this.map = new Array(rawMap.length);
     for (let y = 0; y < rawMap.length; y++) {
       this.map[y] = new Array(rawMap[y].length);
@@ -401,10 +409,6 @@ function transformTile(tile: RawTile) {
   }
 }
 
-function transformMap() {
-  map.transform()
-}
-
 let inputs: Input[] = [];
 
 function remove(shouldRemove: RemoveStrategy) {
@@ -457,7 +461,6 @@ function gameLoop() {
 }
 
 window.onload = () => {
-  transformMap();
   gameLoop();
 }
 
