@@ -3,17 +3,6 @@ const TILE_SIZE = 30;
 const FPS = 30;
 const SLEEP = 1000 / FPS;
 
-// enum RawTile {
-//   AIR,
-//   FLUX,
-//   UNBREAKABLE,
-//   PLAYER,
-//   STONE, FALLING_STONE,
-//   BOX, FALLING_BOX,
-//   KEY1, LOCK1,
-//   KEY2, LOCK2
-// }
-
 interface RawTileValue {
   transform(): Tile;
 }
@@ -77,7 +66,6 @@ class Lock2Value implements RawTileValue {
     return new LockTile(BLUE_KEY);
   }
 }
-
 
 class RawTile {
   static readonly AIR = new RawTile(new AirValue());
@@ -394,11 +382,11 @@ class Player {
     this.x = newx;
     this.y = newy;
   }
-
   move(map: Map, dx: number, dy: number) {
     this.moveToTile(map, this.x + dx, this.y + dy);
   }
 }
+
 let player = new Player();
 
 
@@ -477,10 +465,6 @@ let map = new Map();
 function assertExhausted(x: never): never {
   throw new Error("Unexpected object: " + x);
 }
-
-// function transformTile(tile: RawTile) {
-//   return tile.transform();
-// }
 
 let inputs: Input[] = [];
 
