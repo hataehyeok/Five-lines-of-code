@@ -63,7 +63,7 @@ class KeyConfiguration {
   ) { }
   setColor(g: CanvasRenderingContext2D) { g.fillStyle = this.color; }
   is1() { return this._1; }
-  removeLock() { remove(this.removeStrategy); }
+  removeLock(map: Map) { map.remove(this.removeStrategy); }
   fillRect(g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
@@ -201,11 +201,11 @@ class Key implements Tile {
     this.keyConf.fillRect(g, x, y);
   }
   moveHorizontal(map: Map, player: Player, dx: number) {
-    this.keyConf.removeLock();
+    this.keyConf.removeLock(map);
     player.move(map, dx, 0);
   }
   moveVertical(map: Map, player: Player, dy: number) {
-    this.keyConf.removeLock();
+    this.keyConf.removeLock(map);
     player.move(map, 0, dy);
   }
   update(x: number, y: number) { }
@@ -291,12 +291,9 @@ class Player {
     map.moveVertical(this, this.x, this.y, dy);
   }
   pushHorizontal(map: Map, tile: Tile, dx: number) {
-    if (map.isAir(this.x + dx + dx, this.y) && !map.isAir(this.x + dx, this.y + 1)) {
-      map.setTile(this.x + dx + dx, this.y, tile);
-      this.moveToTile(map, this.x + dx, this.y);
-    }
+    map.pushHorizontal(this, tile, this.x, this.y, dx);
   }
-  private moveToTile(map: Map, newx: number, newy: number) {
+  moveToTile(map: Map, newx: number, newy: number) {
     map.movePlayer(this.x, this.y, newx, newy);
     this.x = newx;
     this.y = newy;
@@ -342,12 +339,6 @@ class Map {
   getBlockOnTopState(x: number, y: number): FallingState {
     return this.map[y][x].getBlockOnTopState();
   }
-  isAir(x: number, y: number): boolean {
-    return this.map[y][x].isAir();
-  }
-  setTile(x: number, y: number, tile: Tile) {
-    this.map[y][x] = tile;
-  }
   movePlayer(x: number, y: number, newx: number, newy: number) {
     this.map[y][x] = new Air();
     this.map[newy][newx] = new PlayerTile();
@@ -365,6 +356,12 @@ class Map {
           this.map[y][x] = new Air();
         }
       }
+    }
+  }
+  pushHorizontal(player: Player, tile: Tile, x: number, y: number, dx: number) {
+    if (this.map[y][x + dx + dx].isAir() && !this.map[y + 1][x + dx].isAir()) {
+      this.map[y][x + dx + dx] = tile;
+      player.moveToTile(this, x + dx, y);
     }
   }
 }
